@@ -3,6 +3,55 @@
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
+/**
+ * Retrieve the Google Calendar API key from a WordPress option or environment variable.
+ * Configure via: Settings > General or define GOOGLE_CALENDAR_API_KEY in wp-config.php.
+ */
+function wscs_get_google_api_key() {
+    $key = get_option( 'wscs_google_api_key', '' );
+    if ( empty( $key ) ) {
+        $key = defined( 'GOOGLE_CALENDAR_API_KEY' ) ? GOOGLE_CALENDAR_API_KEY : '';
+    }
+    return $key;
+}
+
+/**
+ * Build the Google Calendar API request URL.
+ */
+function wscs_get_calendar_api_url( $max_results = 2, $extra_params = '' ) {
+    $api_key = wscs_get_google_api_key();
+    if ( empty( $api_key ) ) {
+        return '';
+    }
+    $current_time = date( 'c' );
+    $url = 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events'
+         . '?key=' . urlencode( $api_key )
+         . '&maxResults=' . intval( $max_results )
+         . '&timeMin=' . urlencode( $current_time );
+    if ( ! empty( $extra_params ) ) {
+        $url .= '&' . $extra_params;
+    }
+    return $url;
+}
+
+/**
+ * Fetch calendar events from the Google Calendar API.
+ * Returns the decoded JSON array or null on failure.
+ */
+function wscs_fetch_calendar_events( $max_results = 2, $extra_params = '' ) {
+    $url = wscs_get_calendar_api_url( $max_results, $extra_params );
+    if ( empty( $url ) ) {
+        return null;
+    }
+    $response = wp_remote_get( $url );
+    if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+        return null;
+    }
+    $body = wp_remote_retrieve_body( $response );
+    $json = json_decode( $body, true );
+    return $json;
+}
+
 function register_theme_menus() {
   register_nav_menus(
     array(
@@ -60,7 +109,7 @@ class wscs_materializecss_large_walker extends Walker_Nav_Menu
 
 	   //add id corresponding to parent...this is ouputted in the ul tag that contains a submenu
 	   $parentID = $this->wscsCurItem;
-	   $output .= "\n" . $indent . '<ul ' . $id . ' class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
+	   $output .= "\n" . $indent . '<ul class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
 	}
 
 

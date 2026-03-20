@@ -47,7 +47,7 @@
                     <ol>
                         <li>Follow <a href="http://thetartan.org/2011/9/19/special/resume">these tips</a> for writing a good resume.</li>
                         <li>Go to career fairs and impress recruiters with your pitch and experience!</li>
-                        <li>Prepare for technical interviews using <a href="http://www.crackingthecodinginterview.com/">Cracking the Coding Interview</a>.
+                        <li>Prepare for technical interviews using <a href="http://www.crackingthecodinginterview.com/">Cracking the Coding Interview</a>.</li>
                         <li>Land your dream job!</li>
                     </ol>
                 </div>

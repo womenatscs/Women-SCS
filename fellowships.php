@@ -156,14 +156,14 @@
               <tr>
                 <td><a href="https://cra.org/cra-w/creu/">Collaborative Research Experiences for Undergraduates (CREU)</a></td>
                 <td>$3,000 stipend, $1,500 expenditures</td>
-                <td>All<td>
+                <td>All</td>
                 <td>Yes</td>
                 <td>Must be a US permanent resident and must have completed two years of undergraduate study at the college level</td>
               </tr>
               <tr>
                 <td><a href="https://www.microsoft.com/en-us/research/academic-program/dissertation-grant/">Microsoft Dissertation Grant Program</a></td>
                 <td>$20,000</td>
-                <td>All<td>
+                <td>All</td>
                 <td>No</td>
                 <td>Must be enrolled in fourth year or beyond in a PhD program at a university in the United States or Canada, must be doing dissertation work that relates to computing topics in which Microsoft Research has expertise, must self-identify with at least one group underrepresented in computing</td>
               </tr>
@@ -197,28 +197,28 @@
               <tr>
                 <td><a href="http://www.research.ibm.com/university/awards/phdfellowship.shtml">IBM PhD Fellowship Award</a></td>
                 <td>Tuition, fees, and stipend</td>
-                <td>All<td>
+                <td>All</td>
                 <td>No</td>
                 <td>Must be a full-time PhD student</td>
               </tr>
               <tr>
                 <td><a href="https://www.microsoft.com/en-us/research/academic-program/phd-fellowship-program/">Microsoft PhD Fellowship Award</a></td>
                 <td>Tuition, fees, and stipend</td>
-                <td>All<td>
+                <td>All</td>
                 <td>No</td>
                 <td>Must be a full-time PhD student in a North American university doing research related to the research topics carried out by Microsoft Research</td>
               </tr>
               <tr>
                 <td><a href="https://research.fb.com/programs/fellowship/">Facebook Fellowship Program</a></td>
                 <td>Tuition, fees, and stipend</td>
-                <td>All<td>
+                <td>All</td>
                 <td>No</td>
                 <td>Must be a full-time PhD student doing research related to specific research topics</td>
               </tr>
               <tr>
                 <td><a href="https://www.palantir.com/students/scholarship/wit-north-america/">Women in Technology Scholarship</a></td>
                 <td>$10,000</td>
-                <td>Women<td>
+                <td>Women</td>
                 <td>No</td>
                 <td></td>
               </tr>
