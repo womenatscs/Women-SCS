@@ -3,6 +3,98 @@
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
+/**
+ * Retrieve the Google Calendar API key from wp-config.php constants.
+ * Define WSCS_GCAL_API_KEY in wp-config.php instead of hardcoding it in templates.
+ *
+ * @return string The API key, or an empty string if not configured.
+ */
+function wscs_get_gcal_api_key() {
+    return defined( 'WSCS_GCAL_API_KEY' ) ? WSCS_GCAL_API_KEY : '';
+}
+
+/**
+ * Retrieve the Google Calendar ID from wp-config.php constants.
+ * Define WSCS_GCAL_CALENDAR_ID in wp-config.php (defaults to the organization calendar).
+ *
+ * @return string The calendar ID.
+ */
+function wscs_get_gcal_calendar_id() {
+    return defined( 'WSCS_GCAL_CALENDAR_ID' ) ? WSCS_GCAL_CALENDAR_ID : 'women.at.scs@gmail.com';
+}
+
+/**
+ * Fetch upcoming events from Google Calendar API.
+ *
+ * @param int  $maxResults     Maximum number of events to return.
+ * @param bool $singleEvents   Whether to expand recurring events into instances.
+ * @return array|null Decoded JSON array of calendar events, or null on failure.
+ */
+function wscs_fetch_calendar_events( $maxResults = 2, $singleEvents = false ) {
+    $apiKey = wscs_get_gcal_api_key();
+    if ( empty( $apiKey ) ) {
+        return null;
+    }
+
+    date_default_timezone_set( 'EST' );
+    $currentTime = date( 'c' );
+    $calendarId  = urlencode( wscs_get_gcal_calendar_id() );
+
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d&timeMin=%s',
+        $calendarId,
+        urlencode( $apiKey ),
+        intval( $maxResults ),
+        urlencode( $currentTime )
+    );
+
+    if ( $singleEvents ) {
+        $url .= '&singleEvents=true';
+    }
+
+    $response = wp_remote_get( $url );
+    if ( is_array( $response ) ) {
+        return json_decode( $response['body'], true );
+    }
+
+    return null;
+}
+
+/**
+ * Render a list of upcoming calendar events with proper output escaping.
+ *
+ * @param array|null $json         Decoded calendar JSON (from wscs_fetch_calendar_events).
+ * @param string     $dateFormat   PHP date format string.
+ * @param bool       $sort         Whether to sort events by start date.
+ */
+function wscs_render_calendar_events( $json, $dateFormat = 'm/d/y', $sort = false ) {
+    if ( empty( $json ) || empty( $json['items'] ) ) {
+        return;
+    }
+
+    $items = $json['items'];
+
+    if ( $sort ) {
+        usort( $items, function( $a, $b ) {
+            $dateA = isset( $a['start']['date'] ) ? $a['start']['date'] : $a['start']['dateTime'];
+            $dateB = isset( $b['start']['date'] ) ? $b['start']['date'] : $b['start']['dateTime'];
+            return strtotime( $dateA ) - strtotime( $dateB );
+        });
+    }
+
+    foreach ( $items as $event ) {
+        $dateString   = isset( $event['start']['date'] ) ? $event['start']['date'] : $event['start']['dateTime'];
+        $date         = date_create( $dateString );
+        $formattedDate = date_format( $date, $dateFormat );
+
+        echo '<div class="event">
+                <div class="info">' . esc_html( $formattedDate ) . '</div>
+                <div class="name"><b>' . esc_html( $event['summary'] ) . '</b></div>
+                <div class="info">' . esc_html( isset( $event['location'] ) ? $event['location'] : '' ) . '</div>
+              </div>';
+    }
+}
+
 function register_theme_menus() {
   register_nav_menus(
     array(
@@ -188,7 +280,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
