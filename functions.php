@@ -3,6 +3,54 @@
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
+/**
+ * Fetch upcoming events from the Google Calendar API.
+ *
+ * Requires GOOGLE_CALENDAR_API_KEY to be defined in wp-config.php.
+ * Requires GOOGLE_CALENDAR_ID to be defined in wp-config.php
+ * (defaults to 'women.at.scs@gmail.com' when not set).
+ *
+ * @param int  $maxResults     Maximum number of events to return.
+ * @param bool $singleEvents   Whether to expand recurring events.
+ *
+ * @return array|null  Decoded array of calendar events, or null on failure.
+ */
+function wscs_get_calendar_events( $maxResults = 2, $singleEvents = false ) {
+    if ( ! defined( 'GOOGLE_CALENDAR_API_KEY' ) ) {
+        return null;
+    }
+
+    $calendar_id = defined( 'GOOGLE_CALENDAR_ID' )
+        ? GOOGLE_CALENDAR_ID
+        : 'women.at.scs@gmail.com';
+
+    date_default_timezone_set( 'EST' );
+    $currentTime = date( 'c' );
+
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d&timeMin=%s',
+        urlencode( $calendar_id ),
+        urlencode( GOOGLE_CALENDAR_API_KEY ),
+        intval( $maxResults ),
+        urlencode( $currentTime )
+    );
+
+    if ( $singleEvents ) {
+        $url .= '&singleEvents=true';
+    }
+
+    $response = wp_remote_get( $url );
+
+    if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+        return null;
+    }
+
+    $body = wp_remote_retrieve_body( $response );
+    $json = json_decode( $body, true );
+
+    return $json;
+}
+
 function register_theme_menus() {
   register_nav_menus(
     array(
@@ -60,7 +108,7 @@ class wscs_materializecss_large_walker extends Walker_Nav_Menu
 
 	   //add id corresponding to parent...this is ouputted in the ul tag that contains a submenu
 	   $parentID = $this->wscsCurItem;
-	   $output .= "\n" . $indent . '<ul ' . $id . ' class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
+	   $output .= "\n" . $indent . '<ul class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
 	}
 
 
