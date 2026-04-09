@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Google Calendar API key.
+ * To override, define GOOGLE_CALENDAR_API_KEY in wp-config.php.
+ */
+if ( ! defined( 'GOOGLE_CALENDAR_API_KEY' ) ) {
+    define( 'GOOGLE_CALENDAR_API_KEY', 'REPLACE_WITH_YOUR_API_KEY' );
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
@@ -188,7 +196,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
