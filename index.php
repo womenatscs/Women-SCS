@@ -1,11 +1,8 @@
 <?php get_header();
     date_default_timezone_set('EST');
     $currentTime = date('c');
-    // 3 query parameters set:
-    // maxResults = 2
-    // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' . $currentTime);
+    $calendarApiUrl = wscs_get_calendar_api_url( 'women.at.scs@gmail.com', 2 );
+    $calendarEventsRequest = $calendarApiUrl ? wp_remote_get( $calendarApiUrl . $currentTime ) : array();
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -107,9 +104,9 @@
 	        		$formattedDate = date_format($date,"l, M j");
 	        		echo
 	        			'<div class="event">
-	        				<div class="info">' . $formattedDate . '</div>
-	        				<div class="name"><b>' . $event["summary"] . '</b></div>
-	        				<div class="info">' . $event["location"] . '</div>
+	        				<div class="info">' . esc_html( $formattedDate ) . '</div>
+	        				<div class="name"><b>' . esc_html( $event["summary"] ) . '</b></div>
+	        				<div class="info">' . esc_html( $event["location"] ) . '</div>
 	        			</div>';
 	        	}
 	        ?>

@@ -1,11 +1,8 @@
 <?php get_header();
     date_default_timezone_set('EST');
     $currentTime = date('c');
-    // 3 query parameters set:
-    // maxResults = 3
-    // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' .$currentTime);
+    $calendarApiUrl = wscs_get_calendar_api_url( 'women.at.scs@gmail.com', 2 );
+    $calendarEventsRequest = $calendarApiUrl ? wp_remote_get( $calendarApiUrl . $currentTime ) : array();
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -33,7 +30,7 @@
     <?php if ( have_posts() ) : ?>
       <header class="search-page-header">
         <span class="page-title">
-          <?php printf( "<b>Search Results for \"" . get_search_query() . "\"</b>"); ?>
+          <b>Search Results for "<?php echo esc_html( get_search_query() ); ?>"</b>
         </span>
       </header>
 
@@ -47,7 +44,7 @@
     <?php else : ?>
       <header class="search-page-header">
         <span class="page-title">
-          <?php printf( "<b>Search Results for \"" . get_search_query() . "\"</b>"); ?>
+          <b>Search Results for "<?php echo esc_html( get_search_query() ); ?>"</b>
         </span>
       </header>
       <p class="no-results"><?php _e( 'Sorry, no posts matched your criteria.' ); ?></p>

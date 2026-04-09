@@ -1,5 +1,29 @@
 <?php
 
+/**
+ * Build the Google Calendar API URL.
+ *
+ * The API key must be defined as GOOGLE_CALENDAR_API_KEY in wp-config.php
+ * or supplied via an environment variable of the same name.
+ */
+function wscs_get_calendar_api_url( $calendar_id, $max_results, $extra_params = '' ) {
+    $api_key = defined( 'GOOGLE_CALENDAR_API_KEY' ) ? GOOGLE_CALENDAR_API_KEY : getenv( 'GOOGLE_CALENDAR_API_KEY' );
+    if ( empty( $api_key ) ) {
+        return '';
+    }
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d',
+        urlencode( $calendar_id ),
+        urlencode( $api_key ),
+        intval( $max_results )
+    );
+    if ( ! empty( $extra_params ) ) {
+        $url .= '&' . $extra_params;
+    }
+    $url .= '&timeMin=';
+    return $url;
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
@@ -60,7 +84,7 @@ class wscs_materializecss_large_walker extends Walker_Nav_Menu
 
 	   //add id corresponding to parent...this is ouputted in the ul tag that contains a submenu
 	   $parentID = $this->wscsCurItem;
-	   $output .= "\n" . $indent . '<ul ' . $id . ' class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
+	   $output .= "\n" . $indent . '<ul class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
 	}
 
 
@@ -188,7 +212,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
