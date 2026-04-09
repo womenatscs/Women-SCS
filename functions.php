@@ -3,6 +3,45 @@
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
+/**
+ * Retrieve the Google Calendar API key from a WordPress constant or option.
+ * Define WSCS_GOOGLE_API_KEY in wp-config.php, or store it via
+ * the 'wscs_google_api_key' option in the database.
+ *
+ * IMPORTANT: Do NOT hardcode the key in theme source files.
+ */
+function wscs_get_google_api_key() {
+    if ( defined( 'WSCS_GOOGLE_API_KEY' ) ) {
+        return WSCS_GOOGLE_API_KEY;
+    }
+    return get_option( 'wscs_google_api_key', '' );
+}
+
+/**
+ * Build a Google Calendar events API URL.
+ *
+ * @param string $calendar_id  The calendar email address.
+ * @param int    $max_results  Maximum number of events to return.
+ * @param string $time_min     ISO 8601 lower-bound for event start time.
+ * @param array  $extra_params Optional extra query parameters.
+ * @return string              The full API URL (or empty string if no key configured).
+ */
+function wscs_calendar_api_url( $calendar_id, $max_results, $time_min, $extra_params = array() ) {
+    $api_key = wscs_get_google_api_key();
+    if ( empty( $api_key ) ) {
+        return '';
+    }
+    $params = array_merge(
+        array(
+            'key'        => $api_key,
+            'maxResults' => intval( $max_results ),
+            'timeMin'    => $time_min,
+        ),
+        $extra_params
+    );
+    return 'https://www.googleapis.com/calendar/v3/calendars/' . urlencode( $calendar_id ) . '/events?' . http_build_query( $params );
+}
+
 function register_theme_menus() {
   register_nav_menus(
     array(
@@ -60,7 +99,7 @@ class wscs_materializecss_large_walker extends Walker_Nav_Menu
 
 	   //add id corresponding to parent...this is ouputted in the ul tag that contains a submenu
 	   $parentID = $this->wscsCurItem;
-	   $output .= "\n" . $indent . '<ul ' . $id . ' class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
+	   $output .= "\n" . $indent . '<ul class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
 	}
 
 
@@ -188,7 +227,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
