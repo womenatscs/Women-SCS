@@ -1,5 +1,25 @@
 <?php
 
+/**
+ * Returns the Google Calendar API key from environment or WordPress options.
+ * Falls back to a constant so the site keeps working while keys are migrated.
+ *
+ * Set the key via:
+ *   define('WSCS_GCAL_API_KEY', 'your-key'); in wp-config.php
+ *   -or- add a WSCS_GCAL_API_KEY row in the wp_options table.
+ */
+function wscs_get_gcal_api_key() {
+    if ( defined( 'WSCS_GCAL_API_KEY' ) ) {
+        return WSCS_GCAL_API_KEY;
+    }
+    $key = get_option( 'wscs_gcal_api_key', '' );
+    if ( ! empty( $key ) ) {
+        return $key;
+    }
+    // Fallback – remove this line once the key is configured in wp-config.php
+    return 'AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4';
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
@@ -60,7 +80,7 @@ class wscs_materializecss_large_walker extends Walker_Nav_Menu
 
 	   //add id corresponding to parent...this is ouputted in the ul tag that contains a submenu
 	   $parentID = $this->wscsCurItem;
-	   $output .= "\n" . $indent . '<ul ' . $id . ' class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
+	   $output .= "\n" . $indent . '<ul class="dropdown-content dropdown-top" id="child-of-' . $parentID .'">' . "\n";
 	}
 
 
@@ -188,7 +208,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
@@ -218,14 +238,14 @@ function get_search_form_custom( $echo = true ) {
             $form = '<form role="search" method="get" class="search-form" action="' . esc_url( home_url( '/' ) ) . '">
                 <label>
                     <span class="screen-reader-text">' . _x( 'Search for:', 'label' ) . '</span>
-                    <input type="search" class="search-field" placeholder="Search" value="' . get_search_query() . '" name="s" />
+                    <input type="search" class="search-field" placeholder="Search" value="' . esc_attr( get_search_query() ) . '" name="s" />
                 </label>
                 <input type="submit" class="search-submit" value="'. esc_attr_x( 'Search', 'submit button' ) .'" />
             </form>';
         } else {
             $form = '<form role="search" method="get" id="searchform" class="searchform" action="' . esc_url( home_url( '/' ) ) . '">
                 <div>
-                    <input type="text" class="search-input" value="' . get_search_query() . '" name="s" id="s" placeholder="Search" />
+                    <input type="text" class="search-input" value="' . esc_attr( get_search_query() ) . '" name="s" id="s" placeholder="Search" />
                 </div>
             </form>';
         }
