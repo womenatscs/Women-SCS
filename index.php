@@ -1,14 +1,5 @@
 <?php get_header();
-    date_default_timezone_set('EST');
-    $currentTime = date('c');
-    // 3 query parameters set:
-    // maxResults = 2
-    // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' . $currentTime);
-    if ( is_array( $calendarEventsRequest ) ) {
-        $calendarEvents = $calendarEventsRequest['body']; // use the content
-    }
+    $json = wscs_fetch_calendar_events( 'women.at.scs@gmail.com', 2 );
 ?>
 
 <main>
@@ -89,30 +80,7 @@
       <!-- start mobile upcoming events info -->
       <div class="col s12 l4 label" id="dates">
         <div class="upcoming-events"> Upcoming Events </div>
-            <?php
-	        	$json = json_decode($calendarEvents, true);
-            // var_dump($json["items"]);
-
-            usort($json["items"], function($a, $b) { //Sort the array using a user defined function
-              $dateStringA = $a["start"]["date"] ? $a["start"]["date"] : $a["start"]["dateTime"];
-              $dateStringB = $b["start"]["date"] ? $b["start"]["date"] : $b["start"]["dateTime"];
-              $currSeconds = strtotime(time());
-              return strtotime($dateStringA) - $currSeconds < strtotime($dateStringB) - $currSeconds ? -1 : 1; //Compare the scores
-            });
-
-            // var_dump($json["items"]);
-            foreach ($json["items"] as $event) {
-	        		$dateString = $event["start"]["date"] ? $event["start"]["date"] : $event["start"]["dateTime"];
-	        		$date = date_create($dateString);
-	        		$formattedDate = date_format($date,"l, M j");
-	        		echo
-	        			'<div class="event">
-	        				<div class="info">' . $formattedDate . '</div>
-	        				<div class="name"><b>' . $event["summary"] . '</b></div>
-	        				<div class="info">' . $event["location"] . '</div>
-	        			</div>';
-	        	}
-	        ?>
+            <?php wscs_render_calendar_events( $json, 'l, M j' ); ?>
       </div>
       <!-- end mobile upcoming events info -->
 	<!-- TODO: hacky way of ending row -->

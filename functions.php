@@ -3,6 +3,92 @@
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
+/**
+ * Retrieve the Google Calendar API key from a WordPress constant.
+ *
+ * Define GOOGLE_CALENDAR_API_KEY in wp-config.php:
+ *   define( 'GOOGLE_CALENDAR_API_KEY', 'your-api-key-here' );
+ *
+ * @return string The API key, or an empty string if not configured.
+ */
+function wscs_get_google_calendar_api_key() {
+    if ( defined( 'GOOGLE_CALENDAR_API_KEY' ) ) {
+        return GOOGLE_CALENDAR_API_KEY;
+    }
+    return '';
+}
+
+/**
+ * Fetch upcoming Google Calendar events.
+ *
+ * @param string $calendar_id  The Google Calendar ID.
+ * @param int    $max_results  Maximum number of events to return.
+ * @param bool   $single_events Whether to expand recurring events.
+ * @return array|null Decoded JSON array of calendar data, or null on failure.
+ */
+function wscs_fetch_calendar_events( $calendar_id, $max_results = 2, $single_events = false ) {
+    $api_key = wscs_get_google_calendar_api_key();
+    if ( empty( $api_key ) ) {
+        return null;
+    }
+
+    date_default_timezone_set( 'EST' );
+    $current_time = date( 'c' );
+
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d&timeMin=%s',
+        urlencode( $calendar_id ),
+        urlencode( $api_key ),
+        intval( $max_results ),
+        urlencode( $current_time )
+    );
+
+    if ( $single_events ) {
+        $url .= '&singleEvents=true';
+    }
+
+    $response = wp_remote_get( $url );
+    if ( is_array( $response ) ) {
+        return json_decode( $response['body'], true );
+    }
+
+    return null;
+}
+
+/**
+ * Render a list of calendar events with proper output escaping.
+ *
+ * @param array  $json          Decoded calendar JSON data.
+ * @param string $date_format   PHP date format string.
+ * @param bool   $sort_events   Whether to sort events by start date.
+ */
+function wscs_render_calendar_events( $json, $date_format = 'l, M j', $sort_events = true ) {
+    if ( empty( $json['items'] ) ) {
+        return;
+    }
+
+    $items = $json['items'];
+
+    if ( $sort_events ) {
+        usort( $items, function( $a, $b ) {
+            $date_a = isset( $a['start']['date'] ) ? $a['start']['date'] : $a['start']['dateTime'];
+            $date_b = isset( $b['start']['date'] ) ? $b['start']['date'] : $b['start']['dateTime'];
+            return strtotime( $date_a ) - strtotime( $date_b );
+        });
+    }
+
+    foreach ( $items as $event ) {
+        $date_string = isset( $event['start']['date'] ) ? $event['start']['date'] : $event['start']['dateTime'];
+        $date = date_create( $date_string );
+        $formatted_date = date_format( $date, $date_format );
+        echo '<div class="event">
+            <div class="info">' . esc_html( $formatted_date ) . '</div>
+            <div class="name"><b>' . esc_html( $event['summary'] ) . '</b></div>
+            <div class="info">' . esc_html( $event['location'] ) . '</div>
+        </div>';
+    }
+}
+
 function register_theme_menus() {
   register_nav_menus(
     array(
