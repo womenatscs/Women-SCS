@@ -10,7 +10,7 @@
     // into instances and only return single one-off events and instances of
     // recurring events, but not the underlying recurring events themselves
     // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&singleEvents=true&timeMin=' . $currentTime);
+    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=' . wscs_get_gcal_api_key() . '&maxResults=2&singleEvents=true&timeMin=' . $currentTime);
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -49,10 +49,10 @@
 	        		$formattedDate = date_format($date,"M j");
               $formattedTime = date_format($date, "h:iA");
 	        		echo
-	        			'<div class="row"><div class="event-hexa"><div class="hex-overlay"><h1>' . $formattedDate . '</h1></div></div>
-                 <div class="event-heading" style="padding-left: 220px"><h3>' . $event["summary"] . '</h3>
-                 <p>' . $event["location"] . '
-                 <br>'  . $formattedTime . '</p></div></div>';
+	        			'<div class="row"><div class="event-hexa"><div class="hex-overlay"><h1>' . esc_html( $formattedDate ) . '</h1></div></div>
+                 <div class="event-heading" style="padding-left: 220px"><h3>' . esc_html( $event["summary"] ) . '</h3>
+                 <p>' . esc_html( $event["location"] ) . '
+                 <br>'  . esc_html( $formattedTime ) . '</p></div></div>';
 
               }
 ?>
