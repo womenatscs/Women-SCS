@@ -188,7 +188,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
@@ -244,7 +244,54 @@ function add_search_box( $items, $args ) {
 	return $items;
 }
 
+/**
+ * Fetch upcoming events from Google Calendar API.
+ *
+ * API key is read from the GOOGLE_CALENDAR_API_KEY constant, which should be
+ * defined in wp-config.php (or a similar non-versioned config file).
+ *
+ * @param int    $maxResults     Number of events to return.
+ * @param bool   $singleEvents   Whether to expand recurring events.
+ * @param string $calendarId     Google Calendar ID to query.
+ * @return string|null  JSON response body, or null on failure.
+ */
+function wscs_fetch_calendar_events( $maxResults = 2, $singleEvents = false, $calendarId = 'women.at.scs@gmail.com' ) {
+    if ( ! defined( 'GOOGLE_CALENDAR_API_KEY' ) || empty( GOOGLE_CALENDAR_API_KEY ) ) {
+        return null;
+    }
 
+    date_default_timezone_set( 'EST' );
+    $currentTime = date( 'c' );
+
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d&timeMin=%s',
+        urlencode( $calendarId ),
+        urlencode( GOOGLE_CALENDAR_API_KEY ),
+        intval( $maxResults ),
+        urlencode( $currentTime )
+    );
+
+    if ( $singleEvents ) {
+        $url .= '&singleEvents=true';
+    }
+
+    $response = wp_remote_get( $url );
+    if ( is_array( $response ) ) {
+        return $response['body'];
+    }
+
+    return null;
+}
+
+/**
+ * Safely render a calendar event field for HTML output.
+ *
+ * @param string $value  The raw value from the API response.
+ * @return string        The escaped value safe for HTML output.
+ */
+function wscs_esc_calendar_field( $value ) {
+    return esc_html( (string) $value );
+}
 
 ?>
 

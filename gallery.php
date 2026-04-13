@@ -1,15 +1,6 @@
 <?php /* Template Name: Photo Gallery */ ?>
-<?php get_header(); 
-    date_default_timezone_set('EST');
-    $currentTime = date('c');
-    // 3 query parameters set: 
-    // maxResults = 3
-    // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/xiangyiqisara@gmail.com/events?key=AIzaSyDDIMbO-_T-5cklnZU1-nnZAavWox67-ds&maxResults=3&timeMin=' . $currentTime);
-    if ( is_array( $calendarEventsRequest ) ) {
-      $calendarEvents = $calendarEventsRequest['body']; // use the content
-    }
+<?php get_header();
+    $calendarEvents = wscs_fetch_calendar_events( 3, false, 'xiangyiqisara@gmail.com' );
 ?>
 
 <main>
@@ -24,17 +15,18 @@
         <div class="label"> <h2>Upcoming <br> Events</h2> </div>
             <?php
             $json = json_decode($calendarEvents, true);
-            // var_dump($json["items"]);
+            if ( ! empty( $json["items"] ) ) {
             foreach ($json["items"] as $event) {
-              $dateString = $event["start"]["date"] ? $event["start"]["date"] : $event["start"]["dateTime"];
+              $dateString = isset($event["start"]["date"]) ? $event["start"]["date"] : $event["start"]["dateTime"];
               $date = date_create($dateString);
               $formattedDate = date_format($date,"m/d/y");
               echo 
                 '<div class="event">
-                  <div class="info">' . $formattedDate . '</div>
-                  <div class="name"><b>' . $event["summary"] . '</b></div>
-                  <div class="info">' . $event["location"] . '</div>
+                  <div class="info">' . esc_html( $formattedDate ) . '</div>
+                  <div class="name"><b>' . esc_html( $event["summary"] ) . '</b></div>
+                  <div class="info">' . esc_html( $event["location"] ) . '</div>
                 </div>';
+            }
             }
           ?>
       </div>
