@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #4a3dbd;
+            --accent: #fd79a8;
+            --accent-light: #fab1cb;
+            --success: #00b894;
+            --danger: #e17055;
+            --danger-dark: #d63031;
+            --bg-gradient-start: #0c0032;
+            --bg-gradient-mid: #190061;
+            --bg-gradient-end: #240090;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text: #f5f5f5;
+            --text-muted: rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-mid), var(--bg-gradient-end));
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0 10px;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 12px 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            min-width: 110px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.2);
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Category selector */
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-btn:hover {
+            background: rgba(108, 92, 231, 0.3);
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        /* Main game area */
+        .game-area {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Hangman SVG */
+        .hangman-display {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hangman-svg {
+            width: 200px;
+            height: 220px;
+        }
+
+        .hangman-svg line,
+        .hangman-svg circle {
+            stroke: var(--primary-light);
+            stroke-width: 3;
+            stroke-linecap: round;
+            fill: none;
+            transition: opacity 0.4s, stroke 0.4s;
+        }
+
+        .hangman-svg .gallows {
+            stroke: rgba(255, 255, 255, 0.25);
+            stroke-width: 3;
+        }
+
+        .hangman-svg .body-part {
+            opacity: 0;
+            stroke: var(--accent);
+        }
+
+        .hangman-svg .body-part.visible {
+            opacity: 1;
+            animation: drawIn 0.5s ease-out;
+        }
+
+        @keyframes drawIn {
+            from {
+                opacity: 0;
+                stroke-dasharray: 100;
+                stroke-dashoffset: 100;
+            }
+            to {
+                opacity: 1;
+                stroke-dasharray: 100;
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Lives indicator */
+        .lives-display {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .heart {
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .heart.lost {
+            opacity: 0.2;
+            transform: scale(0.8);
+            filter: grayscale(1);
+        }
+
+        .heart.losing {
+            animation: heartBreak 0.5s ease-out;
+        }
+
+        @keyframes heartBreak {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            60% { transform: scale(0.7); }
+            100% { transform: scale(0.8); }
+        }
+
+        /* Word and hint area */
+        .word-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .hint-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px 24px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 100%;
+        }
+
+        .hint-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-light);
+            margin-bottom: 6px;
+        }
+
+        .hint-text {
+            font-size: 0.95rem;
+            color: var(--text);
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* Word display */
+        .word-display {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 10px 0;
+        }
+
+        .letter-box {
+            width: 48px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .letter-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-light), var(--accent));
+            border-radius: 2px;
+        }
+
+        .letter-box.revealed {
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .letter-box.space {
+            width: 24px;
+        }
+
+        .letter-box.space::after {
+            display: none;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0) rotateX(90deg); }
+            60% { transform: scale(1.2) rotateX(-10deg); }
+            100% { transform: scale(1) rotateX(0); }
+        }
+
+        /* Keyboard */
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .key-btn {
+            width: 44px;
+            height: 50px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-btn:hover:not(:disabled) {
+            background: rgba(108, 92, 231, 0.4);
+            border-color: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .key-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .key-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.15;
+            transform: scale(0.9);
+        }
+
+        .key-btn.correct {
+            background: linear-gradient(135deg, var(--success), #55efc4);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+        }
+
+        .key-btn.wrong {
+            background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+        /* Game over overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .overlay-content {
+            background: linear-gradient(145deg, rgba(25, 0, 97, 0.95), rgba(12, 0, 50, 0.98));
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 40px 50px;
+            text-align: center;
+            animation: slideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 420px;
+            width: 90%;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .overlay-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            animation: bounce 0.6s ease 0.3s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .overlay-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .overlay-title.win {
+            background: linear-gradient(135deg, #00b894, #55efc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-title.lose {
+            background: linear-gradient(135deg, var(--danger), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-word {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .overlay-word span {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.5);
+        }
+
+        .play-again-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Streak display */
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(253, 121, 168, 0.2), rgba(108, 92, 231, 0.2));
+            border: 1px solid rgba(253, 121, 168, 0.3);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .game-area {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hangman-display {
+                width: 100%;
+            }
+
+            .hangman-svg {
+                width: 160px;
+                height: 180px;
+            }
+
+            .letter-box {
+                width: 36px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            .letter-box::after {
+                width: 28px;
+            }
+
+            .key-btn {
+                width: 34px;
+                height: 42px;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+
+            .stat-card {
+                padding: 10px 16px;
+                min-width: 90px;
+            }
+
+            .overlay-content {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Confetti canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="game-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Hangman</h1>
+            <p>Guess the word before it's too late!</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="wins-count">0</div>
+                <div class="stat-label">Wins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="losses-count">0</div>
+                <div class="stat-label">Losses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="streak-count">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+
+        <!-- Category selector -->
+        <div class="category-selector" id="categories"></div>
+
+        <!-- Game area -->
+        <div class="game-area">
+            <!-- Hangman drawing -->
+            <div class="hangman-display">
+                <svg class="hangman-svg" viewBox="0 0 200 220">
+                    <!-- Gallows -->
+                    <line class="gallows" x1="20" y1="210" x2="180" y2="210"/>
+                    <line class="gallows" x1="60" y1="210" x2="60" y2="20"/>
+                    <line class="gallows" x1="60" y1="20" x2="140" y2="20"/>
+                    <line class="gallows" x1="140" y1="20" x2="140" y2="45"/>
+
+                    <!-- Body parts (hidden by default) -->
+                    <circle class="body-part" id="head" cx="140" cy="60" r="15"/>
+                    <line class="body-part" id="body" x1="140" y1="75" x2="140" y2="125"/>
+                    <line class="body-part" id="left-arm" x1="140" y1="90" x2="115" y2="110"/>
+                    <line class="body-part" id="right-arm" x1="140" y1="90" x2="165" y2="110"/>
+                    <line class="body-part" id="left-leg" x1="140" y1="125" x2="115" y2="160"/>
+                    <line class="body-part" id="right-leg" x1="140" y1="125" x2="165" y2="160"/>
+                </svg>
+
+                <!-- Lives -->
+                <div class="lives-display" id="lives-display"></div>
+            </div>
+
+            <!-- Word area -->
+            <div class="word-area">
+                <div class="hint-box">
+                    <div class="hint-label">Hint</div>
+                    <div class="hint-text" id="hint-text">Pick a category to start!</div>
+                </div>
+                <div class="word-display" id="word-display"></div>
+            </div>
+        </div>
+
+        <!-- Keyboard -->
+        <div class="keyboard" id="keyboard"></div>
+    </div>
+
+    <!-- Game over overlay -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <div class="overlay-icon" id="overlay-icon"></div>
+            <div class="overlay-title" id="overlay-title"></div>
+            <div class="overlay-word" id="overlay-word"></div>
+            <button class="play-again-btn" onclick="startNewGame()">Play Again</button>
+            <div class="streak-badge" id="streak-badge" style="display: none;">
+                <span>&#x1F525;</span>
+                <span id="streak-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---- Word Data ----
+        const WORDS = {
+            animals: [
+                { word: "ELEPHANT", hint: "The largest land animal with a trunk" },
+                { word: "PENGUIN", hint: "A flightless bird that loves the cold" },
+                { word: "DOLPHIN", hint: "An intelligent ocean mammal" },
+                { word: "GIRAFFE", hint: "The tallest living animal" },
+                { word: "CHEETAH", hint: "The fastest land animal" },
+                { word: "OCTOPUS", hint: "A sea creature with eight arms" },
+                { word: "BUTTERFLY", hint: "An insect with colorful wings" },
+                { word: "KANGAROO", hint: "An Australian animal that hops" },
+                { word: "CHAMELEON", hint: "A lizard that can change colors" },
+                { word: "FLAMINGO", hint: "A pink bird that stands on one leg" },
+            ],
+            movies: [
+                { word: "INCEPTION", hint: "A dream within a dream within a dream" },
+                { word: "GLADIATOR", hint: "A Roman general turned slave turned fighter" },
+                { word: "INTERSTELLAR", hint: "A journey through a wormhole to save humanity" },
+                { word: "TITANIC", hint: "A love story on an ill-fated ship" },
+                { word: "AVATAR", hint: "Blue aliens on the moon Pandora" },
+                { word: "JAWS", hint: "A great white shark terrorizes a beach town" },
+                { word: "FROZEN", hint: "Let it go, let it go!" },
+                { word: "COCO", hint: "A boy visits the Land of the Dead" },
+                { word: "RATATOUILLE", hint: "A rat who dreams of being a chef" },
+                { word: "MULAN", hint: "A young woman disguises herself as a soldier" },
+            ],
+            countries: [
+                { word: "AUSTRALIA", hint: "The land down under" },
+                { word: "BRAZIL", hint: "Home of the Amazon rainforest" },
+                { word: "ICELAND", hint: "Land of fire and ice in the North Atlantic" },
+                { word: "JAPAN", hint: "The land of the rising sun" },
+                { word: "MADAGASCAR", hint: "An island nation off Africa's southeast coast" },
+                { word: "SWITZERLAND", hint: "Famous for chocolate, cheese, and the Alps" },
+                { word: "PORTUGAL", hint: "Westernmost country in continental Europe" },
+                { word: "THAILAND", hint: "Known as the Land of Smiles" },
+                { word: "MOROCCO", hint: "A North African kingdom with vibrant markets" },
+                { word: "ARGENTINA", hint: "Home of tango and gauchos" },
+            ],
+            science: [
+                { word: "GRAVITY", hint: "The force that keeps us on the ground" },
+                { word: "PHOTOSYNTHESIS", hint: "How plants make their food from sunlight" },
+                { word: "MOLECULE", hint: "The smallest unit of a chemical compound" },
+                { word: "TELESCOPE", hint: "An instrument to observe distant objects in space" },
+                { word: "EVOLUTION", hint: "The process of species changing over time" },
+                { word: "MAGNETISM", hint: "The force produced by moving electric charges" },
+                { word: "CHROMOSOME", hint: "A structure carrying genetic information" },
+                { word: "VOLCANO", hint: "A mountain that can erupt with lava" },
+                { word: "NEUTRON", hint: "A subatomic particle with no electric charge" },
+                { word: "ECLIPSE", hint: "When one celestial body blocks light from another" },
+            ],
+            food: [
+                { word: "CROISSANT", hint: "A buttery, flaky French pastry" },
+                { word: "GUACAMOLE", hint: "A creamy dip made from avocados" },
+                { word: "SPAGHETTI", hint: "Long, thin Italian pasta" },
+                { word: "CHOCOLATE", hint: "A sweet treat made from cacao beans" },
+                { word: "PINEAPPLE", hint: "A tropical fruit with a spiky crown" },
+                { word: "DUMPLING", hint: "A small pocket of dough filled with goodies" },
+                { word: "PANCAKE", hint: "A flat cake cooked on a griddle" },
+                { word: "BURRITO", hint: "A flour tortilla wrapped around a filling" },
+                { word: "PRETZEL", hint: "A baked snack twisted into a knot shape" },
+                { word: "TIRAMISU", hint: "An Italian coffee-flavored layered dessert" },
+            ],
+        };
+
+        const CATEGORY_EMOJIS = {
+            animals: "\uD83D\uDC3E",
+            movies: "\uD83C\uDFAC",
+            countries: "\uD83C\uDF0D",
+            science: "\uD83D\uDD2C",
+            food: "\uD83C\uDF54",
+        };
+
+        const MAX_WRONG = 6;
+        const BODY_PARTS = ["head", "body", "left-arm", "right-arm", "left-leg", "right-leg"];
+
+        // ---- Game State ----
+        let currentWord = "";
+        let currentHint = "";
+        let currentCategory = "";
+        let guessedLetters = new Set();
+        let wrongGuesses = 0;
+        let wins = 0;
+        let losses = 0;
+        let streak = 0;
+        let gameActive = false;
+
+        // ---- DOM Elements ----
+        const wordDisplay = document.getElementById("word-display");
+        const hintText = document.getElementById("hint-text");
+        const keyboard = document.getElementById("keyboard");
+        const livesDisplay = document.getElementById("lives-display");
+        const overlay = document.getElementById("overlay");
+        const overlayIcon = document.getElementById("overlay-icon");
+        const overlayTitle = document.getElementById("overlay-title");
+        const overlayWord = document.getElementById("overlay-word");
+        const streakBadge = document.getElementById("streak-badge");
+        const streakText = document.getElementById("streak-text");
+        const winsCount = document.getElementById("wins-count");
+        const lossesCount = document.getElementById("losses-count");
+        const streakCount = document.getElementById("streak-count");
+        const categoriesContainer = document.getElementById("categories");
+
+        // ---- Initialize ----
+        function init() {
+            createParticles();
+            createCategories();
+            createKeyboard();
+            updateLives();
+            // Auto-start with a random category
+            const cats = Object.keys(WORDS);
+            selectCategory(cats[Math.floor(Math.random() * cats.length)]);
+        }
+
+        // ---- Particles ----
+        function createParticles() {
+            const container = document.getElementById("particles");
+            const colors = ["#6c5ce7", "#a29bfe", "#fd79a8", "#fab1cb", "#00b894"];
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement("div");
+                particle.className = "particle";
+                const size = Math.random() * 6 + 2;
+                particle.style.width = size + "px";
+                particle.style.height = size + "px";
+                particle.style.left = Math.random() * 100 + "%";
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDuration = (Math.random() * 15 + 10) + "s";
+                particle.style.animationDelay = (Math.random() * 10) + "s";
+                container.appendChild(particle);
+            }
+        }
+
+        // ---- Categories ----
+        function createCategories() {
+            Object.keys(WORDS).forEach(cat => {
+                const btn = document.createElement("button");
+                btn.className = "category-btn";
+                btn.textContent = CATEGORY_EMOJIS[cat] + " " + cat.charAt(0).toUpperCase() + cat.slice(1);
+                btn.onclick = () => selectCategory(cat);
+                btn.dataset.category = cat;
+                categoriesContainer.appendChild(btn);
+            });
+        }
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll(".category-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.category === cat);
+            });
+            startNewGame();
+        }
+
+        // ---- Game Start ----
+        function startNewGame() {
+            overlay.classList.remove("show");
+            guessedLetters.clear();
+            wrongGuesses = 0;
+            gameActive = true;
+
+            // Pick random word from category
+            const wordList = WORDS[currentCategory];
+            const entry = wordList[Math.floor(Math.random() * wordList.length)];
+            currentWord = entry.word;
+            currentHint = entry.hint;
+
+            // Reset UI
+            hintText.textContent = currentHint;
+            updateWordDisplay();
+            updateLives();
+            resetHangman();
+            resetKeyboard();
+        }
+
+        // ---- Word Display ----
+        function updateWordDisplay() {
+            wordDisplay.innerHTML = "";
+            for (const ch of currentWord) {
+                const box = document.createElement("div");
+                box.className = "letter-box";
+                if (ch === " ") {
+                    box.classList.add("space");
+                } else if (guessedLetters.has(ch)) {
+                    box.textContent = ch;
+                    box.classList.add("revealed");
+                }
+                wordDisplay.appendChild(box);
+            }
+        }
+
+        // ---- Keyboard ----
+        function createKeyboard() {
+            const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+            keyboard.innerHTML = "";
+            rows.forEach(row => {
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "keyboard-row";
+                for (const letter of row) {
+                    const btn = document.createElement("button");
+                    btn.className = "key-btn";
+                    btn.textContent = letter;
+                    btn.id = "key-" + letter;
+                    btn.onclick = () => guessLetter(letter);
+                    rowDiv.appendChild(btn);
+                }
+                keyboard.appendChild(rowDiv);
+            });
+        }
+
+        function resetKeyboard() {
+            document.querySelectorAll(".key-btn").forEach(btn => {
+                btn.disabled = false;
+                btn.className = "key-btn";
+            });
+        }
+
+        // ---- Guess Logic ----
+        function guessLetter(letter) {
+            if (!gameActive || guessedLetters.has(letter)) return;
+
+            guessedLetters.add(letter);
+            const btn = document.getElementById("key-" + letter);
+
+            if (currentWord.includes(letter)) {
+                btn.classList.add("correct");
+                btn.disabled = true;
+                updateWordDisplay();
+
+                // Check win
+                const wordLetters = new Set(currentWord.replace(/ /g, "").split(""));
+                const allGuessed = [...wordLetters].every(l => guessedLetters.has(l));
+                if (allGuessed) {
+                    gameActive = false;
+                    wins++;
+                    streak++;
+                    updateStats();
+                    setTimeout(() => showOverlay(true), 500);
+                }
+            } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                wrongGuesses++;
+                showBodyPart(wrongGuesses - 1);
+                updateLives();
+
+                // Check loss
+                if (wrongGuesses >= MAX_WRONG) {
+                    gameActive = false;
+                    losses++;
+                    streak = 0;
+                    updateStats();
+                    // Reveal word
+                    currentWord.split("").forEach(l => guessedLetters.add(l));
+                    updateWordDisplay();
+                    setTimeout(() => showOverlay(false), 600);
+                }
+            }
+        }
+
+        // ---- Keyboard Input ----
+        document.addEventListener("keydown", (e) => {
+            const letter = e.key.toUpperCase();
+            if (/^[A-Z]$/.test(letter) && gameActive) {
+                guessLetter(letter);
+            }
+        });
+
+        // ---- Hangman Drawing ----
+        function resetHangman() {
+            BODY_PARTS.forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove("visible");
+            });
+        }
+
+        function showBodyPart(index) {
+            if (index < BODY_PARTS.length) {
+                document.getElementById(BODY_PARTS[index]).classList.add("visible");
+            }
+        }
+
+        // ---- Lives ----
+        function updateLives() {
+            const remaining = MAX_WRONG - wrongGuesses;
+            livesDisplay.innerHTML = "";
+            for (let i = 0; i < MAX_WRONG; i++) {
+                const heart = document.createElement("span");
+                heart.className = "heart";
+                if (i >= remaining) {
+                    heart.classList.add("lost");
+                    heart.textContent = "\uD83D\uDDA4";
+                } else {
+                    heart.textContent = "\u2764\uFE0F";
+                }
+                livesDisplay.appendChild(heart);
+            }
+        }
+
+        // ---- Stats ----
+        function updateStats() {
+            winsCount.textContent = wins;
+            lossesCount.textContent = losses;
+            streakCount.textContent = streak;
+        }
+
+        // ---- Overlay ----
+        function showOverlay(won) {
+            if (won) {
+                overlayIcon.textContent = "\uD83C\uDF89";
+                overlayTitle.textContent = "You Won!";
+                overlayTitle.className = "overlay-title win";
+                overlayWord.innerHTML = "The word was <span>" + currentWord + "</span>";
+
+                if (streak > 1) {
+                    streakBadge.style.display = "inline-flex";
+                    streakText.textContent = streak + " win streak!";
+                } else {
+                    streakBadge.style.display = "none";
+                }
+
+                launchConfetti();
+            } else {
+                overlayIcon.textContent = "\uD83D\uDE14";
+                overlayTitle.textContent = "Game Over";
+                overlayTitle.className = "overlay-title lose";
+                overlayWord.innerHTML = "The word was <span>" + currentWord + "</span>";
+                streakBadge.style.display = "none";
+            }
+
+            overlay.classList.add("show");
+        }
+
+        // ---- Confetti ----
+        function launchConfetti() {
+            const canvas = document.getElementById("confetti-canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ["#6c5ce7", "#a29bfe", "#fd79a8", "#fab1cb", "#00b894", "#55efc4", "#ffeaa7", "#fdcb6e"];
+
+            for (let i = 0; i < 150; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 10 + 5,
+                    h: Math.random() * 6 + 3,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    speed: Math.random() * 3 + 2,
+                    rotSpeed: Math.random() * 10 - 5,
+                    oscillation: Math.random() * 2,
+                    phase: Math.random() * Math.PI * 2,
+                });
+            }
+
+            let frame = 0;
+            const maxFrames = 180;
+
+            function animate() {
+                if (frame > maxFrames) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.y += p.speed;
+                    p.rotation += p.rotSpeed;
+                    p.x += Math.sin(p.phase + frame * 0.02) * p.oscillation;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = Math.max(0, 1 - frame / maxFrames);
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                frame++;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ---- Start ----
+        init();
+    </script>
+</body>
+</html>
