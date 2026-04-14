@@ -1,5 +1,69 @@
 <?php
 
+/**
+ * Returns the Google Calendar API key from wp-config.php constant.
+ * Define WSCS_GCAL_API_KEY in wp-config.php instead of hardcoding it in templates.
+ *
+ * Example (add to wp-config.php):
+ *   define( 'WSCS_GCAL_API_KEY', 'your-api-key-here' );
+ */
+function wscs_get_gcal_api_key() {
+    if ( defined( 'WSCS_GCAL_API_KEY' ) ) {
+        return WSCS_GCAL_API_KEY;
+    }
+    return '';
+}
+
+/**
+ * Returns the Google Calendar ID from wp-config.php constant.
+ * Define WSCS_GCAL_CALENDAR_ID in wp-config.php instead of hardcoding it in templates.
+ *
+ * Example (add to wp-config.php):
+ *   define( 'WSCS_GCAL_CALENDAR_ID', 'women.at.scs@gmail.com' );
+ */
+function wscs_get_gcal_calendar_id() {
+    if ( defined( 'WSCS_GCAL_CALENDAR_ID' ) ) {
+        return WSCS_GCAL_CALENDAR_ID;
+    }
+    return 'women.at.scs@gmail.com';
+}
+
+/**
+ * Builds and executes a Google Calendar API request, returning the decoded events array.
+ *
+ * @param int $maxResults  Maximum number of events to return.
+ * @param bool $singleEvents  Whether to expand recurring events into instances.
+ * @return array|null  Decoded calendar events array, or null on failure.
+ */
+function wscs_fetch_gcal_events( $maxResults = 2, $singleEvents = false ) {
+    date_default_timezone_set( 'EST' );
+    $currentTime = date( 'c' );
+    $apiKey      = wscs_get_gcal_api_key();
+    $calendarId  = rawurlencode( wscs_get_gcal_calendar_id() );
+
+    if ( empty( $apiKey ) ) {
+        return null;
+    }
+
+    $url = sprintf(
+        'https://www.googleapis.com/calendar/v3/calendars/%s/events?key=%s&maxResults=%d&timeMin=%s',
+        $calendarId,
+        $apiKey,
+        $maxResults,
+        rawurlencode( $currentTime )
+    );
+
+    if ( $singleEvents ) {
+        $url .= '&singleEvents=true';
+    }
+
+    $response = wp_remote_get( $url );
+    if ( is_array( $response ) ) {
+        return json_decode( $response['body'], true );
+    }
+    return null;
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
