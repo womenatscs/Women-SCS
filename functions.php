@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * Returns the Google Calendar API key from environment or wp-config.php constant.
+ *
+ * Define GOOGLE_CALENDAR_API_KEY in wp-config.php or set the
+ * GOOGLE_CALENDAR_API_KEY environment variable. Never hard-code API keys in
+ * theme files.
+ */
+function wscs_get_google_calendar_api_key() {
+    if ( defined( 'GOOGLE_CALENDAR_API_KEY' ) ) {
+        return GOOGLE_CALENDAR_API_KEY;
+    }
+    $env = getenv( 'GOOGLE_CALENDAR_API_KEY' );
+    if ( $env ) {
+        return $env;
+    }
+    return '';
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
