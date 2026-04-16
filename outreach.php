@@ -19,7 +19,7 @@
       <h2 class="listbox-heading">OurCS</h2>
   </div>
   <div class="listbox-content">
-        This 3 day <a href="http://www.cs.cmu.edu/ourcs/">workshop</a> is research focused and will provide opportunities for undergraduate women from the USA and around the globe to work on exploratory problems in teams led by researchers from industry, academia and other computing related domains.
+        This 3 day <a href="https://www.cs.cmu.edu/ourcs/">workshop</a> is research focused and will provide opportunities for undergraduate women from the USA and around the globe to work on exploratory problems in teams led by researchers from industry, academia and other computing related domains.
   </div>
 </button>
 
@@ -39,7 +39,7 @@
     <h2 class="listbox-heading">Take Your Child to Work Day</h2>
   </div>
   <div class="listbox-content">
-    Every year on the fourth Thursday of April, Women@SCS runs programs that celebrate <a href="http://www.daughtersandsonstowork.org/">"Take Our Daughters and Sons to Work Day"</a>. At this event, children of Carnegie Mellon's staff and faculty take part in the <a href="https://www.women.cs.cmu.edu/What/Outreach/Roadshow/index.php">Roadshow</a> or a hands on robot building session.
+    Every year on the fourth Thursday of April, Women@SCS runs programs that celebrate <a href="https://www.daughtersandsonstowork.org/">"Take Our Daughters and Sons to Work Day"</a>. At this event, children of Carnegie Mellon's staff and faculty take part in the <a href="https://www.women.cs.cmu.edu/What/Outreach/Roadshow/index.php">Roadshow</a> or a hands on robot building session.
   </div>
 </button>
 
@@ -60,7 +60,7 @@
   </div>
   <div class="listbox-content">
     Women@SCS developed the <a title="Roadshows" href="https://www.women.cs.cmu.edu/test-site/?page_id=81">Outreach Roadshow,</a> to introduce children, teachers and parents to computer science. This is a highly interactive presentation by undergraduates and graduate students who talk about why they began studying the area, their current experiences, what computer science means to them now, and their future hopes and expectations. The middle and high school presentations include a guessing game, a slide show of CS applications, algorithm style puzzles, a robot demo, and much more. The graduate level Roadshow (presented to undergrads) includes general information on going to graduate school and short research talks.<br><br>
-    You can download a powerpoint version of our Roadshow with ideas for starting your own Roadshow <a href="http://women.cs.cmu.edu/What/Outreach/Roadshow.ppt">here</a>.
+    You can download a powerpoint version of our Roadshow with ideas for starting your own Roadshow <a href="https://women.cs.cmu.edu/What/Outreach/Roadshow.ppt">here</a>.
   </div>
 </button>
 

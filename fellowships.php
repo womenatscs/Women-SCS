@@ -18,7 +18,7 @@
         <h2>Individuals, Corporations &amp; Organizations</h2>
         A summary of all the different forms of funding available. Click on the description for more details. We welcome submissions to our fellowship page! Please email <a href="mailto:women@cs.cmu.edu">women@cs.cmu.edu</a> with submission details.
 
-        You can find additional fellowship opportunities on the CMU <a href="http://www.cs.cmu.edu/~gradfellowships/">SCS Fellowship Opportunities</a> page. There are also many more women-specific scholarships that can be found at the <a href="http://www.onlinecolleges.net/for-students/scholarships-for-women/">Scholarships for Women</a> page at Online Colleges.
+        You can find additional fellowship opportunities on the CMU <a href="https://www.cs.cmu.edu/~gradfellowships/">SCS Fellowship Opportunities</a> page. There are also many more women-specific scholarships that can be found at the <a href="https://www.onlinecolleges.net/for-students/scholarships-for-women/">Scholarships for Women</a> page at Online Colleges.
 
         Last updated on October 14, 2018.
     </div>
@@ -73,7 +73,7 @@
                 <td>Must be an international graduate or postgraduate woman who is not a U.S. citizen or permanent resident</td>
               </tr>
               <tr>
-                <td><a href="http://www.npsc.org/">National Physical Science Consortium</a></td>
+                <td><a href="https://www.npsc.org/">National Physical Science Consortium</a></td>
                 <td>Varies</td>
                 <td>November 30, 2018</td>
                 <td>All</td>
@@ -81,7 +81,7 @@
                 <td></td>
               </tr>
               <tr>
-                <td><a href="http://societyofwomenengineers.swe.org/swe-scholarships">Society of Women Engineers (SWE) Scholarships</a></td>
+                <td><a href="https://societyofwomenengineers.swe.org/swe-scholarships">Society of Women Engineers (SWE) Scholarships</a></td>
                 <td>Varies</td>
                 <td>Varies</td>
                 <td>Women</td>
@@ -133,7 +133,7 @@
                 <td>Must currently be enrolled at an accredited university for the 2017-2018 academic year</td>
               </tr>
               <tr>
-                <td><a href="http://www.lorealusa.com/csr-commitments/l%E2%80%99or%C3%A9al-usa-for-women-in-science-program">L'Oreal Women in Science Fellowship Program</a></td>
+                <td><a href="https://www.lorealusa.com/csr-commitments/l%E2%80%99or%C3%A9al-usa-for-women-in-science-program">L'Oreal Women in Science Fellowship Program</a></td>
                 <td>$60,000</td>
                 <td>Women</td>
                 <td>Yes</td>
@@ -195,7 +195,7 @@
                 <td></td>
               </tr>
               <tr>
-                <td><a href="http://www.research.ibm.com/university/awards/phdfellowship.shtml">IBM PhD Fellowship Award</a></td>
+                <td><a href="https://www.research.ibm.com/university/awards/phdfellowship.shtml">IBM PhD Fellowship Award</a></td>
                 <td>Tuition, fees, and stipend</td>
                 <td>All<td>
                 <td>No</td>

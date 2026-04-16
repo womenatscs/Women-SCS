@@ -5,8 +5,8 @@
     // 3 query parameters set:
     // maxResults = 2
     // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' . $currentTime);
+    // key = API key (defined as GOOGLE_CALENDAR_API_KEY in wp-config.php)
+    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=' . GOOGLE_CALENDAR_API_KEY . '&maxResults=2&timeMin=' . $currentTime);
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -30,7 +30,7 @@
       </p><br>
       <div class="row">
         <div class="column-3">
-         <a href="http://www.cmu.edu/alumni/"><img class="hex" src="<?php echo get_template_directory_uri() . '/img/hex2.png';?>" /><br>
+         <a href="https://www.cmu.edu/alumni/"><img class="hex" src="<?php echo get_template_directory_uri() . '/img/hex2.png';?>" /><br>
           Carnegie Mellon Alumnae Association</a>
         </div>
         <div class="column-3">
@@ -38,7 +38,7 @@
           LinkedIn Group</a>
         </div>
         <div class="column-3">
-          <a href="http://www.cs.cmu.edu/alumni"><img class="hex" src="<?php echo get_template_directory_uri() . '/img/hex3.png';?>" /><br>
+          <a href="https://www.cs.cmu.edu/alumni"><img class="hex" src="<?php echo get_template_directory_uri() . '/img/hex3.png';?>" /><br>
           SCS Alumnae</a>
         </div>
       </div>

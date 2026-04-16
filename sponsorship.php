@@ -5,8 +5,8 @@
     // 3 query parameters set:
     // maxResults = 2
     // timeMin = currentTime
-    // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' . $currentTime);
+    // key = API key (defined as GOOGLE_CALENDAR_API_KEY in wp-config.php)
+    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=' . GOOGLE_CALENDAR_API_KEY . '&maxResults=2&timeMin=' . $currentTime);
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -95,18 +95,18 @@
 <div class="center"><h3>We would like to thank our current and previous industry sponsors!</h3>
   <div class="sponsors">
     <a href="https://www.google.com/"><img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"></a>
-    <a href="http://www.predictivetechnologies.com/"><img src="https://www.predictivetechnologies.com/themes/custom/apt_theme/logo.svg"></a>
+    <a href="https://www.predictivetechnologies.com/"><img src="https://www.predictivetechnologies.com/themes/custom/apt_theme/logo.svg"></a>
     <a href="https://www.capitalone.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Capital_One_logo.svg/1200px-Capital_One_logo.svg.png"></a>
     <a href="https://www.oracle.com/index.html"><img src="https://www.oracle.com/webfolder/s/brand/assets/i/specimens/identity/logo/primary-badge.gif"></a>
     <a href="https://twitter.com/"><img src="https://help.twitter.com/content/dam/help-twitter/big-bird-card.jpeg"></a>
     <a href="https://www.dropbox.com/?landing=dbv2"><img src="https://cfl.dropboxstatic.com/static/images/logo_catalog/dropbox_logo_glyph_2015_m1-vfleInWIl.svg"></a>
     <a href="https://www.microsoft.com/en-us/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/440px-Microsoft_logo_%282012%29.svg.png"></a>
-    <a href="http://www.theharrisfoundation.org/"><img src="http://www.theharrisfoundation.org/images/logo_sub.jpg"></a>
+    <a href="https://www.theharrisfoundation.org/"><img src="https://www.theharrisfoundation.org/images/logo_sub.jpg"></a>
     <a href="https://www.yahoo.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Yahoo%21_logo.svg/512px-Yahoo%21_logo.svg.png"></a>
     <a href="https://www.facebook.com/"><img src="https://en.facebookbrand.com/wp-content/uploads/2016/05/flogo_rgb_hex-brc-site-250.png"></a>
     <a href="https://www.cisco.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Cisco_logo.svg/800px-Cisco_logo.svg.png"></a>
     <a href="https://www.lockheedmartin.com/en-us/index.html"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Lockheed_Martin.svg/440px-Lockheed_Martin.svg.png"></a>
-    <a href="http://www.boeing.com/"><img src="https://www.boeing.co.uk/resources/images/boeing_logo.png"></a>
+    <a href="https://www.boeing.com/"><img src="https://www.boeing.co.uk/resources/images/boeing_logo.png"></a>
     <a href="https://www.intuit.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Intuit_Logo.svg/230px-Intuit_Logo.svg.png"></a>
     <a href="https://www.duolingo.com/"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cb/Duolingo_logo_with_owl.svg/447px-Duolingo_logo_with_owl.svg.png"></a>
 </div>
