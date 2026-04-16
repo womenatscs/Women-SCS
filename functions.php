@@ -1,5 +1,30 @@
 <?php
 
+/**
+ * Returns the Google Calendar API key.
+ * Define GOOGLE_CALENDAR_API_KEY in wp-config.php to override.
+ */
+function wscs_get_google_calendar_api_key() {
+    if ( defined( 'GOOGLE_CALENDAR_API_KEY' ) ) {
+        return GOOGLE_CALENDAR_API_KEY;
+    }
+    return '';
+}
+
+/**
+ * Returns the Google Calendar API URL for fetching events.
+ */
+function wscs_get_calendar_api_url( $max_results = 2, $single_events = false ) {
+    $api_key = wscs_get_google_calendar_api_key();
+    $calendar_id = 'women.at.scs@gmail.com';
+    $current_time = date('c');
+    $url = 'https://www.googleapis.com/calendar/v3/calendars/' . urlencode( $calendar_id ) . '/events?key=' . urlencode( $api_key ) . '&maxResults=' . intval( $max_results ) . '&timeMin=' . urlencode( $current_time );
+    if ( $single_events ) {
+        $url .= '&singleEvents=true';
+    }
+    return $url;
+}
+
 add_theme_support('menus');
 add_theme_support( 'post-thumbnails' );
 
@@ -218,14 +243,14 @@ function get_search_form_custom( $echo = true ) {
             $form = '<form role="search" method="get" class="search-form" action="' . esc_url( home_url( '/' ) ) . '">
                 <label>
                     <span class="screen-reader-text">' . _x( 'Search for:', 'label' ) . '</span>
-                    <input type="search" class="search-field" placeholder="Search" value="' . get_search_query() . '" name="s" />
+                    <input type="search" class="search-field" placeholder="Search" value="' . esc_attr( get_search_query() ) . '" name="s" />
                 </label>
                 <input type="submit" class="search-submit" value="'. esc_attr_x( 'Search', 'submit button' ) .'" />
             </form>';
         } else {
             $form = '<form role="search" method="get" id="searchform" class="searchform" action="' . esc_url( home_url( '/' ) ) . '">
                 <div>
-                    <input type="text" class="search-input" value="' . get_search_query() . '" name="s" id="s" placeholder="Search" />
+                    <input type="text" class="search-input" value="' . esc_attr( get_search_query() ) . '" name="s" id="s" placeholder="Search" />
                 </div>
             </form>';
         }
