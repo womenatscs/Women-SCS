@@ -5,7 +5,8 @@
     // maxResults = 2
     // timeMin = currentTime
     // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=AIzaSyCOUaXqxVzZfCLB5Hqk_1WJZupfo7IoWv4&maxResults=2&timeMin=' . $currentTime);
+    $api_key = defined( 'GOOGLE_CALENDAR_API_KEY' ) ? GOOGLE_CALENDAR_API_KEY : '';
+    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=' . urlencode( $api_key ) . '&maxResults=2&timeMin=' . $currentTime);
     if ( is_array( $calendarEventsRequest ) ) {
         $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
@@ -91,8 +92,6 @@
         <div class="upcoming-events"> Upcoming Events </div>
             <?php
 	        	$json = json_decode($calendarEvents, true);
-            // var_dump($json["items"]);
-
             usort($json["items"], function($a, $b) { //Sort the array using a user defined function
               $dateStringA = $a["start"]["date"] ? $a["start"]["date"] : $a["start"]["dateTime"];
               $dateStringB = $b["start"]["date"] ? $b["start"]["date"] : $b["start"]["dateTime"];
@@ -100,7 +99,6 @@
               return strtotime($dateStringA) - $currSeconds < strtotime($dateStringB) - $currSeconds ? -1 : 1; //Compare the scores
             });
 
-            // var_dump($json["items"]);
             foreach ($json["items"] as $event) {
 	        		$dateString = $event["start"]["date"] ? $event["start"]["date"] : $event["start"]["dateTime"];
 	        		$date = date_create($dateString);

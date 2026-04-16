@@ -5,7 +5,8 @@
     // maxResults = 3
     // timeMin = currentTime
     // key = API key (obtain from console.developers.google.com - navigate to correct project > create credentials > API key)
-    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/xiangyiqisara@gmail.com/events?key=AIzaSyDDIMbO-_T-5cklnZU1-nnZAavWox67-ds&maxResults=3&timeMin=' . $currentTime);
+    $api_key = defined( 'GOOGLE_CALENDAR_API_KEY' ) ? GOOGLE_CALENDAR_API_KEY : '';
+    $calendarEventsRequest = wp_remote_get( 'https://www.googleapis.com/calendar/v3/calendars/women.at.scs@gmail.com/events?key=' . urlencode( $api_key ) . '&maxResults=3&timeMin=' . $currentTime);
     if ( is_array( $calendarEventsRequest ) ) {
       $calendarEvents = $calendarEventsRequest['body']; // use the content
     }
