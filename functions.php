@@ -188,7 +188,7 @@ function envira_gallery_image_titles( $output, $id, $item, $data, $i ) {
   }
 
   if ( isset( $item['title'] )) {
-    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . $item['title'] . '</h3>';
+    $output .= '<h3 style="padding-top: 0.25rem; text-align: center; display: block; letter-spacing: 0.5px; font-size: 1.25rem;">' . esc_html( $item['title'] ) . '</h3>';
   }
 
   return $output;
