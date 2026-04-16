@@ -1,2 +1,17 @@
 .DS_Store
 **/.DS_Store
+
+# Environment and secrets
+.env
+.env.*
+wp-config-local.php
+
+# Editor and IDE files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# OS files
+Thumbs.db
